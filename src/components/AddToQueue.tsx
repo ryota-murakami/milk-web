@@ -1,16 +1,18 @@
 import React, { useState } from "react";
 import { useMutation, useQuery } from "react-query";
+import { apiBaseUrl } from "../constants";
 import { QueueCount } from "./QueueCount";
+import { TiktokEmbed } from "./TiktokEmbed";
 
 interface AddToQueueProps {}
 
 export const AddToQueue: React.FC<AddToQueueProps> = ({}) => {
-  const { data, isLoading, refetch } =
-    useQuery<Array<{ id: string }>>(`/posts?limit=1`);
+  const { data, isLoading } = useQuery<Array<{ id: string }>>(`/posts?limit=1`);
   const { mutateAsync } = useMutation((body: string) => {
-    return fetch("/create/history", {
+    return fetch(`${apiBaseUrl}/create/history`, {
       method: "POST",
       body,
+      credentials: "include",
       headers: {
         "content-type": "application/json",
       },
@@ -33,34 +35,7 @@ export const AddToQueue: React.FC<AddToQueueProps> = ({}) => {
           flexDirection: "column",
         }}
       >
-        <blockquote
-          className="tiktok-embed"
-          cite={`https://www.tiktok.com/@flawhiteboywasted/video/${vid.id}`}
-          data-video-id={vid.id}
-          style={{ maxWidth: 605, minWidth: 325 }}
-        >
-          {" "}
-          <section>
-            {" "}
-            <a
-              target="_blank"
-              title="@benawad"
-              href="https://www.tiktok.com/@benawad"
-              rel="noreferrer"
-            >
-              @benawad
-            </a>{" "}
-            <p></p>{" "}
-            <a
-              target="_blank"
-              title="♬ original sound - Nunya"
-              href="https://www.tiktok.com/music/original-sound-6994482289267428101"
-              rel="noreferrer"
-            >
-              ♬ original sound - Nunya
-            </a>{" "}
-          </section>{" "}
-        </blockquote>{" "}
+        <TiktokEmbed id={vid.id} key={vid.id} />
         <div style={{ textAlign: "center" }}>
           <input
             value={title}
@@ -78,8 +53,9 @@ export const AddToQueue: React.FC<AddToQueueProps> = ({}) => {
                     state: "active",
                   })
                 );
-                setTitle("");
-                refetch();
+                // setTitle("");
+                // refetch();
+                window.location.reload();
               }}
             >
               submit
@@ -93,7 +69,7 @@ export const AddToQueue: React.FC<AddToQueueProps> = ({}) => {
                   state: "skipped",
                 })
               );
-              refetch();
+              window.location.reload();
             }}
             style={{ marginTop: 20 }}
           >
